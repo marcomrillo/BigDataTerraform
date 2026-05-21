@@ -6,11 +6,11 @@ variable "env" {
   type = string
 }
 
-variable "bronze_bucket" {
+variable "raw_bucket" {
   type = string
 }
 
-variable "silver_bucket" {
+variable "staging_bucket" {
   type = string
 }
 

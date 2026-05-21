@@ -110,8 +110,8 @@ script_location = var.script_location
 ---
 
 ```hcl
-"--input_path"  = "s3://${var.bronze_bucket}/sales_small.csv"
-"--output_path" = "s3://${var.silver_bucket}/sales/"
+"--input_path"  = "s3://${var.raw_bucket}/sales_small.csv"
+"--output_path" = "s3://${var.staging_bucket}/sales/"
 ```
 
 Aquí ocurre la conexión:

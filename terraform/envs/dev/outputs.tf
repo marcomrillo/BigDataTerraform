@@ -1,11 +1,11 @@
-output "bronze_bucket_name" {
-  value = module.bronze_bucket.bucket_name
+output "raw_bucket_name" {
+  value = module.raw_bucket.bucket_name
 }
 
-output "silver_bucket_name" {
-  value = module.silver_bucket.bucket_name
+output "staging_bucket_name" {
+  value = module.staging_bucket.bucket_name
 }
 
-output "gold_bucket_name" {
-  value = module.gold_bucket.bucket_name
+output "analytics_bucket_name" {
+  value = module.analytics_bucket.bucket_name
 }

@@ -3,7 +3,7 @@ name: Deploy Data Lake Terraform
 on:
   push:
     branches:
-      - feature/actions_back
+      - main
 
 jobs:
   deploy:
@@ -36,7 +36,7 @@ jobs:
         run: |
           pip install pytest pyspark
       
-      #Cambiar path
+      # Cambiar path usando rutas absolutas
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$GITHUB_WORKSPACE/infra/terraform/archivos_para_bronze" >> $GITHUB_ENV
 
@@ -45,9 +45,11 @@ jobs:
         run: |
           pytest $GITHUB_WORKSPACE/infra/terraform/archivos_para_bronze/tests/
 
-      # Terraform
+      # Terraform (Wrapper desactivado para outputs limpios)
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
 
       - name: Terraform Init
         run: terraform init
@@ -61,18 +63,18 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve -var-file="dev.tfvars"
 
-      # Obtener outputs correctamente
+      # Obtener outputs de forma segura
       - name: Get Terraform Outputs
         id: outputs
         run: |
           echo "BRONZE_BUCKET=$(terraform output -raw bronze_bucket_name)" >> $GITHUB_ENV
 
-      # Subir CSV
+      # Subir CSV usando la ruta absoluta desde la raíz del repositorio
       - name: Upload CSV
         run: |
-          aws s3 cp ../../archivos_para_bronze/sales_small.csv s3://$BRONZE_BUCKET/
+          aws s3 cp $GITHUB_WORKSPACE/infra/terraform/archivos_para_bronze/sales_small.csv s3://$BRONZE_BUCKET/
 
-      # Subir script Glue
+      # Subir script Glue usando la ruta absoluta desde la raíz del repositorio
       - name: Upload Glue Script
         run: |
-          aws s3 cp ../../archivos_para_bronze/scripts/etl_sales.py s3://$BRONZE_BUCKET/scripts/etl_sales.py
+          aws s3 cp $GITHUB_WORKSPACE/infra/terraform/archivos_para_bronze/scripts/etl_sales.py s3://$BRONZE_BUCKET/scripts/etl_sales.py

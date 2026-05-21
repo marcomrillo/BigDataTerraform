@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket         = "datalake-terraform-state-670578095526"
+    bucket         = "datalake-terraform-state-747554529794"
     key            = "dev/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "terraform-locks"
@@ -14,7 +14,7 @@ provider "aws" {
 
 data "aws_caller_identity" "current" {}
 
-module "bronze_bucket" {
+module "raw_bucket" {
   source      = "../../modules/s3_lake"
   project     = var.project
   env         = var.env
@@ -23,7 +23,7 @@ module "bronze_bucket" {
   tags        = var.tags
 }
 
-module "silver_bucket" {
+module "staging_bucket" {
   source      = "../../modules/s3_lake"
   project     = var.project
   env         = var.env
@@ -32,7 +32,7 @@ module "silver_bucket" {
   tags        = var.tags
 }
 
-module "gold_bucket" {
+module "analytics_bucket" {
   source      = "../../modules/s3_lake"
   project     = var.project
   env         = var.env
@@ -49,11 +49,11 @@ module "glue_job" {
 
   glue_role_arn = module.iam.glue_role_arn
 
-  bronze_bucket = module.bronze_bucket.bucket_name
-  silver_bucket = module.silver_bucket.bucket_name
-  temp_bucket   = module.bronze_bucket.bucket_name
+  raw_bucket = module.raw_bucket.bucket_name
+  staging_bucket = module.staging_bucket.bucket_name
+  temp_bucket   = module.raw_bucket.bucket_name
 
-  script_location = "s3://${module.bronze_bucket.bucket_name}/scripts/etl_sales.py"
+  script_location = "s3://${module.raw_bucket.bucket_name}/scripts/etl_sales.py"
 
 
 
@@ -66,7 +66,7 @@ module "iam" {
   project = var.project
   env     = var.env
 
-  bronze_bucket = module.bronze_bucket.bucket_name
-  silver_bucket = module.silver_bucket.bucket_name
-  temp_bucket   = module.bronze_bucket.bucket_name
+  raw_bucket = module.raw_bucket.bucket_name
+  staging_bucket = module.staging_bucket.bucket_name
+  temp_bucket   = module.raw_bucket.bucket_name
 }

@@ -29,8 +29,8 @@ resource "aws_iam_policy" "glue_s3_policy" {
           "s3:ListBucket"
         ]
         Resource = [
-          "arn:aws:s3:::${var.bronze_bucket}",
-          "arn:aws:s3:::${var.bronze_bucket}/*"
+          "arn:aws:s3:::${var.raw_bucket}",
+          "arn:aws:s3:::${var.raw_bucket}/*"
         ]
       },
       {
@@ -39,7 +39,7 @@ resource "aws_iam_policy" "glue_s3_policy" {
           "s3:PutObject"
         ]
         Resource = [
-          "arn:aws:s3:::${var.silver_bucket}/*"
+          "arn:aws:s3:::${var.staging_bucket}/*"
         ]
       },
       {
